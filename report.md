@@ -14,7 +14,7 @@
 - ![Screenshot 2023-08-11 215112](https://github.com/royaghavami/RefactorCode-MiniJava/assets/59202308/fd65c4d1-690a-488f-b689-de6619f0ac78)
 
 ### الگوی Seperate Query from Modifier
-- این اصل به ما می گوید که کدهای مسئول دریافت داده ها را از کدهایی که چیزی را در داخل یک شی تغییر می دهد جدا کنیم.
+- در این اصل کدهای مسئول دریافت داده ها را از کدهایی که چیزی را در داخل یک شی تغییر می دهد جدا میکنیم.
 
   ### در ادامه دو کامیت مربوط به Self Encapsulated Field قرار دارد که در آن برای فیلدهای private از getter استفاده کردیم، یک کامیت مربوط به قرار دادن default برای switch statement و یک کامیت نیز برای loose coupling که به جای ArrayList از List استفاده کردیم و بعدا هنگام new کردن از ArrayList استفاده می کنیم.
   
