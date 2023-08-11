@@ -103,6 +103,8 @@ public class Parser {
                     case accept:
                         finish = true;
                         break;
+                    default:
+                        break;
                 }
                 Log.print("");
             } catch (Exception ignored) {
