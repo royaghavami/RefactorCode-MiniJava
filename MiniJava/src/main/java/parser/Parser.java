@@ -9,6 +9,7 @@ import java.util.Stack;
 import Log.Log;
 import codeGenerator.CodeGeneratorFacade;
 import errorHandler.ErrorHandler;
+import parser.action.Action;
 import scanner.ScannerFacade;
 import scanner.token.Token;
 
