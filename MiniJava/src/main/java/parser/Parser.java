@@ -9,6 +9,7 @@ import java.util.Stack;
 import Log.Log;
 import codeGenerator.CodeGenerator;
 import errorHandler.ErrorHandler;
+import facade.ParserFacade;
 import scanner.lexicalAnalyzer;
 import scanner.token.Token;
 
@@ -16,11 +17,13 @@ public class Parser {
     private ArrayList<Rule> rules;
     private Stack<Integer> parsStack;
     private ParseTable parseTable;
-    private lexicalAnalyzer lexicalAnalyzer;
-    private CodeGenerator cg;
+//    private lexicalAnalyzer lexicalAnalyzer;
+//    private CodeGenerator cg;
+    private ParserFacade parserFacade;
 
     public Parser() {
         parsStack = new Stack<Integer>();
+        parserFacade = new ParserFacade();
         parsStack.push(0);
         try {
             parseTable = new ParseTable(Files.readAllLines(Paths.get("src/main/resources/parseTable")).get(0));
@@ -35,12 +38,14 @@ public class Parser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        cg = new CodeGenerator();
+//        cg = new CodeGenerator();
     }
 
     public void startParse(java.util.Scanner sc) {
-        lexicalAnalyzer = new lexicalAnalyzer(sc);
-        Token lookAhead = lexicalAnalyzer.getNextToken();
+//        lexicalAnalyzer = new lexicalAnalyzer(sc);
+        parserFacade.setLexicalAnalyzer(sc);
+//        Token lookAhead = lexicalAnalyzer.getNextToken();
+        Token lookAhead = parserFacade.getNextToken();
         boolean finish = false;
         Action currentAction;
         while (!finish) {
@@ -54,7 +59,7 @@ public class Parser {
                 switch (currentAction.action) {
                     case shift:
                         parsStack.push(currentAction.number);
-                        lookAhead = lexicalAnalyzer.getNextToken();
+                        lookAhead = parserFacade.getNextToken();
 
                         break;
                     case reduce:
@@ -69,7 +74,7 @@ public class Parser {
                         Log.print(/*"new State : " + */parsStack.peek() + "");
 //                        Log.print("");
                         try {
-                            cg.semanticFunction(rule.semanticAction, lookAhead);
+                            parserFacade.semanticFunction(rule.semanticAction, lookAhead);
                         } catch (Exception e) {
                             Log.print("Code Genetator Error");
                         }
@@ -98,6 +103,6 @@ public class Parser {
 //                    parsStack.pop();
             }
         }
-        if (!ErrorHandler.hasError) cg.printMemory();
+        if (!ErrorHandler.hasError) parserFacade.getCodeGenerator().printMemory();
     }
 }
