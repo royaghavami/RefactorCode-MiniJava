@@ -17,6 +17,27 @@ public class Parser {
     private ArrayList<Rule> rules;
     private Stack<Integer> parsStack;
     private ParseTable parseTable;
+
+    public ArrayList<Rule> getRules() {
+        return rules;
+    }
+
+    public Stack<Integer> getParsStack() {
+        return parsStack;
+    }
+
+    public ParseTable getParseTable() {
+        return parseTable;
+    }
+
+    public ScannerFacade getScannerFacade() {
+        return scannerFacade;
+    }
+
+    public CodeGeneratorFacade getCodeGeneratorFacade() {
+        return codeGeneratorFacade;
+    }
+
     private ScannerFacade scannerFacade;
     private CodeGeneratorFacade codeGeneratorFacade;
 
@@ -33,7 +54,7 @@ public class Parser {
         rules = new ArrayList<Rule>();
         try {
             for (String stringRule : Files.readAllLines(Paths.get("src/main/resources/Rules"))) {
-                rules.add(new Rule(stringRule));
+                getRules().add(new Rule(stringRule));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,38 +64,38 @@ public class Parser {
 
     public void startParse(java.util.Scanner sc) {
 //        lexicalAnalyzer = new lexicalAnalyzer(sc);
-        scannerFacade.setLexicalAnalyzer(sc);
+        getScannerFacade().setLexicalAnalyzer(sc);
 //        Token lookAhead = lexicalAnalyzer.getNextToken();
-        Token lookAhead = scannerFacade.getNextToken();
+        Token lookAhead = getScannerFacade().getNextToken();
         boolean finish = false;
         Action currentAction;
         while (!finish) {
             try {
-                Log.print(/*"lookahead : "+*/ lookAhead.toString() + "\t" + parsStack.peek());
+                Log.print(/*"lookahead : "+*/ lookAhead.toString() + "\t" + getParsStack().peek());
 //                Log.print("state : "+ parsStack.peek());
-                currentAction = parseTable.getActionTable(parsStack.peek(), lookAhead);
+                currentAction = getParseTable().getActionTable(getParsStack().peek(), lookAhead);
                 Log.print(currentAction.toString());
                 //Log.print("");
 
                 switch (currentAction.action) {
                     case shift:
-                        parsStack.push(currentAction.number);
-                        lookAhead = scannerFacade.getNextToken();
+                        getParsStack().push(currentAction.number);
+                        lookAhead = getScannerFacade().getNextToken();
 
                         break;
                     case reduce:
-                        Rule rule = rules.get(currentAction.number);
+                        Rule rule = getRules().get(currentAction.number);
                         for (int i = 0; i < rule.RHS.size(); i++) {
-                            parsStack.pop();
+                            getParsStack().pop();
                         }
 
-                        Log.print(/*"state : " +*/ parsStack.peek() + "\t" + rule.LHS);
+                        Log.print(/*"state : " +*/ getParsStack().peek() + "\t" + rule.LHS);
 //                        Log.print("LHS : "+rule.LHS);
-                        parsStack.push(parseTable.getGotoTable(parsStack.peek(), rule.LHS));
-                        Log.print(/*"new State : " + */parsStack.peek() + "");
+                        getParsStack().push(getParseTable().getGotoTable(getParsStack().peek(), rule.LHS));
+                        Log.print(/*"new State : " + */getParsStack().peek() + "");
 //                        Log.print("");
                         try {
-                            codeGeneratorFacade.semanticFunction(rule.semanticAction, lookAhead);
+                            getCodeGeneratorFacade().semanticFunction(rule.semanticAction, lookAhead);
                         } catch (Exception e) {
                             Log.print("Code Genetator Error");
                         }
@@ -103,6 +124,6 @@ public class Parser {
 //                    parsStack.pop();
             }
         }
-        if (!ErrorHandler.hasError) codeGeneratorFacade.getCodeGenerator().printMemory();
+        if (!ErrorHandler.hasError) getCodeGeneratorFacade().getCodeGenerator().printMemory();
     }
 }
